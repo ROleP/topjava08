@@ -13,7 +13,7 @@
     
     <servlet-mapping>
         <servlet-name>userServlet</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/users</url-pattern>
     </servlet-mapping>
 
 </web-app>
