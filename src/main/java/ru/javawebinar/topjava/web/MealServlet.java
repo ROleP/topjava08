@@ -51,7 +51,7 @@ public class MealServlet extends HttpServlet {
         if (action.equals("edit") || action.equals("add")) {
             int id = getId(req);
             final Meal meal = action.equals("add")
-                    ? new Meal(LocalDateTime.now().withNano(0).withSecond(0), "", 2000)
+                    ? new Meal(LocalDateTime.now().withNano(0).withSecond(0), "", MealsUtil.DEFAULT_CALORIES_PER_DAY)
                     : repository.getById(id);
             req.setAttribute("meal", meal);
             req.getRequestDispatcher("mealEdit.jsp").forward(req, resp);
@@ -69,7 +69,7 @@ public class MealServlet extends HttpServlet {
             LocalDate endDate = LocalDate.now();
             LocalTime startTime = LocalTime.MIN;
             LocalTime endTime = LocalTime.MAX;
-            int caloriesLimit = 2000;
+            int caloriesLimit = MealsUtil.DEFAULT_CALORIES_PER_DAY;
             String s;
 
             if ((s = req.getParameter("sd")) != null) {
