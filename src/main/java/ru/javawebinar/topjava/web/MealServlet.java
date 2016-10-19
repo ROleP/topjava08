@@ -3,7 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealWithExceed;
-import ru.javawebinar.topjava.repository.MealRepositoryInMemoryImpl;
+import ru.javawebinar.topjava.repository.mock.InMemoryMealRepositoryImpl;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.TimeUtil;
 
@@ -29,12 +29,12 @@ import static org.slf4j.LoggerFactory.*;
 public class MealServlet extends HttpServlet {
     private static final Logger LOG = getLogger(MealServlet.class);
 
-    private MealRepositoryInMemoryImpl repository;
+    private InMemoryMealRepositoryImpl repository;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        repository = new MealRepositoryInMemoryImpl();
+        repository = new InMemoryMealRepositoryImpl();
     }
 
     @Override
