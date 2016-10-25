@@ -1,11 +1,14 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealWithExceed;
+import ru.javawebinar.topjava.model.to.MealWithExceed;
 import ru.javawebinar.topjava.repository.mock.InMemoryMealRepositoryImpl;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.TimeUtil;
+import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -29,12 +32,13 @@ import static org.slf4j.LoggerFactory.*;
 public class MealServlet extends HttpServlet {
     private static final Logger LOG = getLogger(MealServlet.class);
 
-    private InMemoryMealRepositoryImpl repository;
+    private MealRestController controller;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        repository = new InMemoryMealRepositoryImpl();
+        ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        controller = applicationContext.getBean(MealRestController.class);
     }
 
     @Override
@@ -52,7 +56,7 @@ public class MealServlet extends HttpServlet {
             int id = getId(req);
             final Meal meal = action.equals("add")
                     ? new Meal(LocalDateTime.now().withNano(0).withSecond(0), "", MealsUtil.DEFAULT_CALORIES_PER_DAY)
-                    : repository.getById(id);
+                    : controller.getById(id);
             req.setAttribute("meal", meal);
             req.getRequestDispatcher("mealEdit.jsp").forward(req, resp);
         }
@@ -61,7 +65,7 @@ public class MealServlet extends HttpServlet {
             if (action.equals("delete")) {
                 int id = getId(req);
                 if (id > 0) {
-                    repository.delete(id);
+                    controller.delete(id);
                 }
             }
 
@@ -108,7 +112,7 @@ public class MealServlet extends HttpServlet {
                 }
             }
 
-            List<MealWithExceed> meals = MealsUtil.getFilteredWithExceededFF(repository.getAll(), startDate, endDate, startTime, endTime, caloriesLimit);
+            List<MealWithExceed> meals = MealsUtil.getFilteredWithExceededFF(controller.getAll(), startDate, endDate, startTime, endTime, caloriesLimit);
 
             req.setAttribute("meals", meals);
             req.setAttribute("startDate", startDate);
@@ -133,7 +137,7 @@ public class MealServlet extends HttpServlet {
                 req.getParameter("desc"),
                 Integer.valueOf(req.getParameter("cal")));
         LOG.info(meal.isNew ? "Create {}" : "Update {}", meal);
-        repository.save(meal);
+        controller.save(meal);
         resp.sendRedirect("meals");
     }
 

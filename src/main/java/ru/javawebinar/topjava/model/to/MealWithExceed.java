@@ -1,4 +1,6 @@
-package ru.javawebinar.topjava.model;
+package ru.javawebinar.topjava.model.to;
+
+import ru.javawebinar.topjava.model.BaseEntity;
 
 import java.time.LocalDateTime;
 

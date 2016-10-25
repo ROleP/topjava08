@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
+import ru.javawebinar.topjava.AuthorizedUser;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,5 +23,26 @@ public class UserServlet extends HttpServlet {
         LOG.debug("redirect to userList");
         //req.getRequestDispatcher("/userList.jsp").forward(req, resp);
         resp.sendRedirect("userList.jsp");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        int id = getId(req);
+        LOG.debug("setserid to " + id);
+        AuthorizedUser.setId(id);
+        LOG.debug("user id is " + AuthorizedUser.id());
+        resp.sendRedirect("/");
+    }
+
+    private int getId(HttpServletRequest request) {
+        String paramId;
+        int result = 0;
+        if ((paramId = request.getParameter("id")) != null) {
+            try {
+                result = Integer.valueOf(paramId);
+            } catch (NumberFormatException e) {}
+        }
+        return result;
     }
 }
