@@ -32,12 +32,13 @@ import static org.slf4j.LoggerFactory.*;
 public class MealServlet extends HttpServlet {
     private static final Logger LOG = getLogger(MealServlet.class);
 
+    private ConfigurableApplicationContext applicationContext;
     private MealRestController controller;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        applicationContext = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         controller = applicationContext.getBean(MealRestController.class);
     }
 
@@ -150,5 +151,11 @@ public class MealServlet extends HttpServlet {
             } catch (NumberFormatException e) {}
         }
         return result;
+    }
+
+    @Override
+    public void destroy() {
+        applicationContext.close();
+        super.destroy();
     }
 }
