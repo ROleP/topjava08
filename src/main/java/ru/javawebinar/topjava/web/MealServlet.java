@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.mock.InMemoryMealRepositoryImpl;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -37,17 +38,17 @@ public class MealServlet extends HttpServlet {
 
         if (action == null) {
             LOG.info("get all");
-            req.setAttribute("mealList", MealsUtil.getWithExceeded(repository.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
+            req.setAttribute("mealList", MealsUtil.getWithExceeded(repository.getAll(AuthorizedUser.id()), MealsUtil.DEFAULT_CALORIES_PER_DAY));
             req.getRequestDispatcher("/mealList.jsp").forward(req, resp);
         } else if ("delete".equals(action)) {
             int id = getId(req);
             LOG.info("Delete {}", id);
-            repository.delete(id);
+            repository.delete(id, AuthorizedUser.id());
             resp.sendRedirect("meals");
         } else if ("create".equals(action) || "update".equals(action)) {
             final Meal meal = action.equals("create") ?
                     new Meal(LocalDateTime.now().withNano(0).withSecond(0), "", 1000) :
-                    repository.get(getId(req));
+                    repository.get(getId(req), AuthorizedUser.id());
             req.setAttribute("meal", meal);
             req.getRequestDispatcher("mealEdit.jsp").forward(req, resp);
         }
@@ -64,7 +65,7 @@ public class MealServlet extends HttpServlet {
                 Integer.valueOf(req.getParameter("calories")));
 
         LOG.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        repository.save(meal);
+        repository.save(meal, AuthorizedUser.id());
         resp.sendRedirect("meals");
     }
 
